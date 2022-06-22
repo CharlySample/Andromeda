@@ -1,0 +1,103 @@
+// @mui material components
+import Grid from "@mui/material/Grid";
+import { Container } from "@mui/system";
+
+import axios from "axios";
+// Material Dashboard 2 React components
+import MDBox from "components/MDBox";
+
+// Material Dashboard 2 React example components
+import PageLayout from "layout/PageLayout";
+import Footer from "components/Footer";
+
+import DefaultLineChart from "components/Charts/LineCharts/DefaultLineChart";
+
+import { useState, useEffect } from "react";
+
+let dataTemp = {
+  labels: [0, 1, 2, 3, 4, 5, 6],
+  datasets: [
+    {
+      label: "Sensor 1",
+      color: "success",
+      data: [0, 1, 2, 3, 4, 5, 6],
+    },
+  ],
+};
+
+const data = {
+  labels: [0, 1, 2, 3, 4, 5, 6],
+  datasets: [
+    {
+      label: "Sensor 1",
+      color: "success",
+      data: [0, 1, 2, 3, 4, 5, 6],
+    },
+  ],
+};
+
+function Temperature() {
+  // eslint-disable-next-line prefer-const
+  let [state, setState] = useState({});
+  // eslint-disable-next-line prefer-const
+  let [status, setStatus] = useState("success");
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      axios.get(`http://smt.cesoft.xyz/temp`).then((res) => {
+        state = res.data;
+        setState({ state });
+        setStatus(status);
+        dataTemp = res.data.data2;
+      });
+    }, 15000);
+    return () => clearInterval(intervalId);
+  }, []);
+  // Solo cambiar DashboardLayout por PageLayout si queremos poner el menu
+  return (
+    <PageLayout>
+      <Container maxWidth={false}>
+        <MDBox mt={5} mb={0}>
+          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+            <Grid item xs={6}>
+              <MDBox pt={0} px={0}>
+                <DefaultLineChart
+                  icon={{ color: "success", component: "thermostat", fontSize: "small" }}
+                  title="SMT IMX3 Temperature"
+                  description=""
+                  height="auto"
+                  chart={dataTemp}
+                />
+              </MDBox>
+            </Grid>
+            <Grid item xs={6}>
+              <MDBox pt={0} px={0}>
+                <DefaultLineChart
+                  icon={{ color: "success", component: "shower", fontSize: "small" }}
+                  title="SMT IMX3 Humidity"
+                  description=""
+                  height="auto"
+                  chart={data}
+                />
+              </MDBox>
+            </Grid>
+            <Grid item xs={6}>
+              <MDBox pt={0} px={0}>
+                <DefaultLineChart
+                  icon={{ color: "success", component: "coronavirus", fontSize: "small" }}
+                  title="SMT IMX3 Particles"
+                  description=""
+                  height="auto"
+                  chart={data}
+                />
+              </MDBox>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <Footer />
+      </Container>
+    </PageLayout>
+  );
+}
+
+export default Temperature;
